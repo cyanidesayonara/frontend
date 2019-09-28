@@ -13,18 +13,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
     
     <script type="text/babel">
-      function WeatherInfo() {
-        const [temp, setTemp] = React.useState(0);
-        const [weather, setWeather] = React.useState(null);
-        const [imgurl, setImgurl] = React.useState(null);
+      function RepoList() {
+        const [repos, setRepos] = React.useState([]);
 
         React.useEffect(() => {
-          fetch("https://api.openweathermap.org/data/2.5/weather?q=London&APPID=688ad8bc3661d52131d81c2f6b583a65&units=metric")
+          fetch("https://api.github.com/search/repositories?q=react")
           .then(response => response.json())
           .then((responseData) => {
-            setTemp(responseData.main.temp)
-            setWeather(responseData.weather[0].main)
-            setImgurl("http://openweathermap.org/img/wn/" + responseData.weather[0].icon + "@2x.png")
+            setRepos(responseData.items)
           })
           .catch(function(err) {
             console.log("Something went wrong")
@@ -33,16 +29,31 @@
 
         return (
           <div>
-            <div>
-              <p>Temperature: {temp} Celsius</p>
-              <p>Weather: {weather}</p>
-              <img src={imgurl} />
-            </div>
+            <h1>Repositories</h1>
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>URL</th>
+                </tr>
+              </thead>
+              <tbody>
+                { repos.map((repo, index) => {
+                  return (
+                    <tr key={ index }>
+                      <td>{ repo.full_name }</td>
+                      <td><a href={ repo.html_url }>{repo.html_url}</a></td>
+                    </tr>
+                  )
+                }
+                )}
+              </tbody>
+            </table>
           </div>
         );
       }
       
-      ReactDOM.render(<WeatherInfo />, document.getElementById('root'));
+      ReactDOM.render(<RepoList />, document.getElementById('root'));
     </script>
   </body>
 </html>

@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>React getting started</title>
+  </head>
+  <body>
+    <!-- Root container for react components -->
+    <div id='root'></div>
+    
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+    
+    <script type="text/babel">
+      function RepoList() {
+        const [query, setQuery] = React.useState("react");
+        const [repos, setRepos] = React.useState([]);
+
+        const queryRepos = () => {
+          fetch("https://api.github.com/search/repositories?q=" + query)
+            .then(response => response.json())
+            .then((responseData) => {
+              setRepos(responseData.items)
+            })
+            .catch(function(err) {
+              console.log("Something went wrong")
+            });
+        };
+
+        React.useEffect(() => {
+          queryRepos();
+        }, []);
+
+        return (
+          <div>
+            <h1>Repositories</h1>
+            <input type="text" onChange={ event => setQuery(event.target.value) } id="q" value={ query }/>
+            <button onClick={ () => queryRepos() }>Search</button>
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>URL</th>
+                </tr>
+              </thead>
+              <tbody>
+                { repos.map((repo, index) => {
+                  return (
+                    <tr key={ index }>
+                      <td>{ repo.full_name }</td>
+                      <td><a href={repo.html_url}>{repo.html_url}</a></td>
+                    </tr>
+                  )
+                }
+                )}
+              </tbody>
+            </table>
+          </div>
+        );
+      }
+      
+      ReactDOM.render(<RepoList />, document.getElementById('root'));
+    </script>
+  </body>
+</html>
